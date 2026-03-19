@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications</title>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<style>
+  body { font-family: Arial, sans-serif; background:#f5f7fb; margin:0; padding:20px; }
+  .container { max-width:600px; margin:auto; background:white; padding:20px; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+  h2 { text-align:center; }
+  .notification { border-bottom:1px solid #ccc; padding:10px; margin-bottom:10px; border-radius:8px; background:#f0f4f8; }
+  .title { font-weight:bold; }
+  .subtitle { color:#555; font-size:0.9em; }
+  .time { font-size:0.8em; color:#888; margin-top:5px; }
+  .form-group { margin-bottom:12px; }
+  input, textarea, button { width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc; font-size:16px; }
+  button { background:#2563eb; color:white; border:none; cursor:pointer; }
+  button:hover { background:#1e4fd1; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Notifications</h2>
+
+  <div id="notifications"></div>
+
+  <h3>Send Test Notification</h3>
+  <div class="form-group">
+    <input type="text" id="toUserId" placeholder="To User ID">
+  </div>
+  <div class="form-group">
+    <input type="text" id="notifTitle" placeholder="Title">
+  </div>
+  <div class="form-group">
+    <input type="text" id="notifSubtitle" placeholder="Subtitle (optional)">
+  </div>
+  <div class="form-group">
+    <textarea id="notifMessage" placeholder="Message" rows="3"></textarea>
+  </div>
+  <button onclick="sendNotification()">Send Notification</button>
+</div>
+
+<script>
+const userId = localStorage.getItem('userId');
+if(!userId) {
+  alert('User ID not found! Please login first.');
+  window.location.href = 'login.html';
+}
+
+// Connect to Notification WebSocket server
+const socket = io('http://localhost:5002'); // adjust port if needed
+
+socket.on('connect', () => {
+  console.log('Connected to WebSocket server');
+  socket.emit('register', userId);
+});
+
+socket.on('notification', (data) => {
+  displayNotification(data);
+});
+
+function displayNotification(data) {
+  const container = document.getElementById('notifications');
+  const div = document.createElement('div');
+  div.className = 'notification';
+  div.innerHTML = `
+    <div class="title">${data.title}</div>
+    <div class="subtitle">${data.subtitle}</div>
+    <div class="message">${data.message}</div>
+    <div class="time">${new Date(data.time).toLocaleTimeString()}</div>
+  `;
+  container.prepend(div); // newest on top
+}
+
+// Send notification via API
+async function sendNotification() {
+  const toUserId = document.getElementById('toUserId').value.trim();
+  const title = document.getElementById('notifTitle').value.trim();
+  const subtitle = document.getElementById('notifSubtitle').value.trim();
+  const message = document.getElementById('notifMessage').value.trim();
+
+  if(!toUserId || !title || !message) return alert('Please fill in required fields');
+
+  try {
+    const res = await fetch('http://localhost:5000/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ toUserId, title, subtitle, message })
+    });
+
+    const data = await res.json();
+    alert(data.message);
+    // clear form
+    document.getElementById('notifTitle').value = '';
+    document.getElementById('notifSubtitle').value = '';
+    document.getElementById('notifMessage').value = '';
+  } catch(err) {
+    alert('Error sending notification: ' + err.message);
+  }
+}
+</script>
+
+</body>
+</html>
