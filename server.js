@@ -20,7 +20,6 @@ const Friends=require("./routes/connectionsRoutes")
 const datingProfile=require("./routes/datingProfileRoutes")
 const themeRoutes = require("./routes/themeRoutes");
 const themeListRoutes = require("./routes/themeListRoutes");
-const otpRoutes = require("./routes/otpRoutes");
 const app = express();
 app.use(express.json());
 
@@ -61,7 +60,6 @@ app.use("/api/datingProfile",datingProfile)
 app.use("/api/notify", notificationRoutes);
 app.use("/api/apptheme", themeRoutes);
 app.use("/api/appthemeList", themeListRoutes);
-app.use("/api/otp", otpRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
