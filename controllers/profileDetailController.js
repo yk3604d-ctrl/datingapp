@@ -6,7 +6,7 @@ const errorCodes = {
 
   // General
   UP1: "Phone number missing",
-  UP2: "User not found",
+  UP2: "User not foundjjj",
   UP3: "Required field missing",
   UP5: "Server error",
 
