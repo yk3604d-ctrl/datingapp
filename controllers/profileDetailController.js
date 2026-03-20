@@ -69,11 +69,14 @@ exports.updateProfileDetails = async (req, res) => {
       return res.status(400).json({ code: "UP1", message: errorCodes.UP1 });
     }
 
-    const user = await UserCore.findById(phoneNumber);
-    if (!user) {
-      return res.status(404).json({ code: "UP2", message: errorCodes.UP2 });
-    }
+   const user = await UserCore.findOne({ phone: phoneNumber });
 
+if (!user) {
+  return res.status(404).json({
+    code: "UP2",
+    message: errorCodes.UP2
+  });
+}
     // ---------------- Validate Email ----------------
     if (email !== undefined) {
       if (typeof email !== "string") {
@@ -199,7 +202,7 @@ exports.getProfileDetails = async (req, res) => {
       return res.status(400).json({ code: "UP1", message: errorCodes.UP1 });
     }
 
-    const user = await UserCore.findById(phoneNumber);
+   const user = await UserCore.findOne({ phone: phoneNumber });
 
     if (!user) {
       return res.status(404).json({ code: "UP2", message: errorCodes.UP2 });
