@@ -205,7 +205,7 @@ exports.getProfileDetails = async (req, res) => {
    const user = await UserCore.findOne({ phone: phoneNumber });
 
     if (!user) {
-      return res.status(404).json({ code: "UP2", message: errorCodes.UP2 });
+      return res.status(404).json({ code: "UP2f", message: errorCodes.UP2 });
     }
 
     return res.json({
