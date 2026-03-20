@@ -69,7 +69,7 @@ exports.updateProfileDetails = async (req, res) => {
       return res.status(400).json({ code: "UP1", message: errorCodes.UP1 });
     }
 
-   const user = await UserCore.findOne({ phone: phoneNumber });
+   const user = await UserCore.findById(phoneNumber);
 
 if (!user) {
   return res.status(404).json({
@@ -202,7 +202,7 @@ exports.getProfileDetails = async (req, res) => {
       return res.status(400).json({ code: "UP1", message: errorCodes.UP1 });
     }
 
-   const user = await UserCore.findOne({ phone: phoneNumber });
+   const user = await UserCore.findById(phoneNumber);
 
     if (!user) {
       return res.status(404).json({ code: "UP2f", message: errorCodes.UP2 });

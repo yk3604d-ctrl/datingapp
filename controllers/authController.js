@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const UserCore = require("../models/userCore");
 
 // ================= REGISTER =================
 exports.register = async (req, res) => {
@@ -29,12 +30,16 @@ exports.register = async (req, res) => {
       password: hashedPassword
     });
 
-    // Generate initial token and expiry for the user
     const token = User.generateToken();
     newUser.token = token;
-    newUser.tokenExpiresAt = User.getTokenExpiry(24); // 24 hours by default
+    newUser.tokenExpiresAt = User.getTokenExpiry(24);
 
     await newUser.save();
+
+    // ⭐ CREATE USER PROFILE
+    await UserCore.create({
+      _id: phone
+    });
 
     return res.json({
       code: "SUCCESS",
